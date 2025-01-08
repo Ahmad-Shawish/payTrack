@@ -10,8 +10,9 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SingleCategory from "../../components/singleCat";
 
-import editIcon from "../../assets/edit.png";
+import editIcon from "../../assets/edit_square_white.png";
 import { addCategory, getCategories } from "../../db/transactions";
+import { StatusBar } from "expo-status-bar";
 
 const categories = () => {
   const [edit, setEdit] = useState(false);
@@ -43,59 +44,66 @@ const categories = () => {
   }, []);
 
   return (
-    <SafeAreaView className="p-6">
-      <View className="flex flex-row justify-between items-center">
-        <Text className="text-2xl">Categories</Text>
-        <TouchableOpacity
-          onPress={() => {
-            setEdit((prev) => !prev);
-          }}
-        >
-          <Image source={editIcon} className="w-6 h-6" />
-        </TouchableOpacity>
-      </View>
+    <>
+      <SafeAreaView className="p-4 bg-[#18181a] h-full">
+        <View className="flex flex-row justify-between items-center">
+          <Text className="text-4xl color-white">Categories</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setEdit((prev) => !prev);
+            }}
+          >
+            <Image source={editIcon} className="w-6 h-6" />
+          </TouchableOpacity>
+        </View>
 
-      <ScrollView className="max-h-[80%]">
-        {/* <TextInput value="Income" editable={edit ? true : false} />
+        <ScrollView className="max-h-[80%]">
+          {/* <TextInput value="Income" editable={edit ? true : false} />
         <TextInput value="Vehicle" editable={edit ? true : false} />
         <TextInput value="Food" editable={edit} />
         <TextInput value="Other" editable={edit} />
         <TextInput value="Life" editable={edit} />
         <SingleCategory value="Some value" edit={edit} />
         <SingleCategory value="Some value" edit={edit} /> */}
-        {data &&
-          data.map((itm) => (
-            <SingleCategory
-              key={itm.id}
-              id={itm.id}
-              value={itm.name}
-              edit={edit}
-            />
-          ))}
+          {data &&
+            data.map((itm) => (
+              <SingleCategory
+                key={itm.id}
+                id={itm.id}
+                value={itm.name}
+                edit={edit}
+              />
+            ))}
 
-        {/* <TextInput
+          {/* <TextInput
           value="Shopping"
           editable={edit}
           className={`color-black ${
             edit ? "border-b border-gray-400" : "border-none"
           } h-14 w-20 `}
         /> */}
-      </ScrollView>
-      {edit && (
-        <>
-          <TextInput
-            placeholder="New Category..."
-            value={newCat}
-            onChangeText={(v) => {
-              setNewCat(v);
-            }}
-          />
-          <TouchableOpacity onPress={handleSubmit}>
-            <Text className="border p-2 w-32">Add Category</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </SafeAreaView>
+        </ScrollView>
+        {edit && (
+          <>
+            <TextInput
+              className="color-white"
+              placeholder="New Category..."
+              placeholderTextColor="white"
+              value={newCat}
+              onChangeText={(v) => {
+                setNewCat(v);
+              }}
+            />
+            <TouchableOpacity onPress={handleSubmit}>
+              <Text className="border p-2 w-32 color-white border-white">
+                Add Category
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </SafeAreaView>
+      <StatusBar style="light" backgroundColor="black" />
+    </>
   );
 };
 

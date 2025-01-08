@@ -201,7 +201,7 @@ const addRecord = () => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="bg-[#18181a] h-full">
       <ScrollView
         className="p-6"
         contentContainerStyle={{ paddingBottom: bottomPadding, gap: 10 }}
@@ -211,6 +211,7 @@ const addRecord = () => {
         <Picker
           selectedValue={recordType}
           onValueChange={(itemValue, itemIndex) => setRecordType(itemValue)}
+          dropdownIconColor="white"
           // mode="dropdown"
           // className="border-2 border-black bg-red-500 h-12"
           // style={{ borderColor: "#008", borderWidth: 20, margin: 15 }}
@@ -226,7 +227,8 @@ const addRecord = () => {
           keyboardType="number-pad"
           onChangeText={(value) => setAmount(value)}
           value={amount}
-          className="text-lg"
+          className="text-lg color-white"
+          placeholderTextColor="grey"
         />
 
         {/* <DatePicker date={date} onDateChange={setDate} /> */}
@@ -242,7 +244,7 @@ const addRecord = () => {
             setShowDate(true);
           }}
         >
-          <Text className="text-lg">{date.toDateString()}</Text>
+          <Text className="text-lg color-white">{date.toDateString()}</Text>
         </TouchableOpacity>
 
         {showDate && (
@@ -263,7 +265,7 @@ const addRecord = () => {
             setShowTime(true);
           }}
         >
-          <Text className="text-lg">{time.toTimeString()}</Text>
+          <Text className="text-lg color-white">{time.toTimeString()}</Text>
         </TouchableOpacity>
 
         {showTime && (
@@ -279,6 +281,7 @@ const addRecord = () => {
         <Picker
           selectedValue={category}
           onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+          dropdownIconColor="white"
         >
           <Picker.Item label="Pick.." color="#808080" enabled={false} />
 
@@ -307,6 +310,7 @@ const addRecord = () => {
           mode="dropdown"
           selectedValue={paymentMethod}
           onValueChange={(itemValue, itemIndex) => setPaymentMethod(itemValue)}
+          dropdownIconColor="white"
         >
           <Picker.Item label="Pick.." color="#808080" enabled={false} />
 
@@ -321,7 +325,8 @@ const addRecord = () => {
           placeholder="Description"
           onChangeText={(value) => setNote(value)}
           value={note}
-          className="text-lg"
+          className="text-lg color-white"
+          placeholderTextColor="grey"
         />
         {param.edit ? (
           <View className="gap-2">
@@ -338,7 +343,7 @@ const addRecord = () => {
           </View>
         ) : (
           <TouchableOpacity onPress={handleSubmit}>
-            <Text className="p-2 border w-32 rounded-xl text-center">
+            <Text className="p-2 border w-full rounded-xl text-center border-white color-white">
               Add Record
             </Text>
           </TouchableOpacity>

@@ -21,6 +21,7 @@ const SingleCategory = ({ value, edit, id }) => {
         }}
         editable={edit}
         onEndEditing={hanldeUpdate}
+        className={`${edit ? "color-white" : "color-gray-400"}`}
       />
     </View>
   );

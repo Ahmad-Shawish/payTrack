@@ -4,15 +4,16 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Image } from "react-native";
 
-import homeImg from "../../assets/house.png";
-import catImg from "../../assets/category.png";
-import addImg from "../../assets/add.png";
+import homeImg from "../../assets/home-white.png";
+import catImg from "../../assets/category_white.png";
+import addImg from "../../assets/add_circle_white.png";
 
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
         tabBarHideOnKeyboard: true,
+        tabBarStyle: { backgroundColor: "black" },
       }}
     >
       <Tabs.Screen

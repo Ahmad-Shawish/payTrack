@@ -64,15 +64,15 @@ const SingleCard = () => {
 
   return (
     <SafeAreaView>
-      <View className="p-4 gap-2 h-full">
+      <View className="p-4 gap-2 h-full bg-[#18181a]">
         <View className="flex-row justify-between">
-          <Text className="text-2xl">{param.date}</Text>
+          <Text className="text-2xl color-white">{param.date}</Text>
           <View className="flex-row items-center gap-2">
             <TouchableOpacity
               className="rounded-full bg-red-400 p-3"
               onPress={handleDelete}
             >
-              <Text>Delete</Text>
+              <Text className="color-white">Delete</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -86,16 +86,18 @@ const SingleCard = () => {
         </View>
         <View className="flex-row justify-between">
           <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
-            <Text>Income:</Text>
-            <Text>{param.amount}</Text>
+            <Text className="color-white">Income:</Text>
+            <Text className="color-white">{param.amount}</Text>
           </View>
           <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
-            <Text>Expenses:</Text>
-            <Text>{data.length > 0 && data[0].sum_expenses}</Text>
+            <Text className="color-white">Expenses:</Text>
+            <Text className="color-white">
+              {data.length > 0 && data[0].sum_expenses}
+            </Text>
           </View>
           <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
-            <Text>Remaining:</Text>
-            <Text>
+            <Text className="color-white">Remaining:</Text>
+            <Text className="color-white">
               {data.length > 0 && param.amount - data[0].sum_expenses}
             </Text>
           </View>

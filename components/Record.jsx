@@ -6,15 +6,15 @@ const Record = ({ amount, date, time, method, category, note, type }) => {
   return (
     <View className="border border-gray-400 w-full h-fit p-4 rounded-lg gap-1">
       <View className="flex-row justify-between items-center">
-        <Text>{d.toDateString()}</Text>
-        <Text>{time}</Text>
+        <Text className="color-white">{d.toDateString()}</Text>
+        <Text className="color-white">{time}</Text>
       </View>
       <View className="flex-row justify-between">
-        <Text>{method}</Text>
-        <Text>{category}</Text>
-        <Text>{amount}</Text>
+        <Text className="color-white">{method}</Text>
+        <Text className="color-white">{category}</Text>
+        <Text className="color-white">{amount}</Text>
       </View>
-      <Text>{note}</Text>
+      <Text className="color-white">{note}</Text>
     </View>
   );
 };

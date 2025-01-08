@@ -26,16 +26,19 @@ const addSalary = () => {
   };
 
   return (
-    <SafeAreaView className="p-6 items-center justify-center h-screen">
+    <SafeAreaView className="p-4 h-screen gap-3 bg-[#18181a]">
       {/* <Text>addSalary</Text> */}
-      <Text className="color-gray-400">Month</Text>
-      <TouchableOpacity
-        onPress={() => {
-          setShowDate(true);
-        }}
-      >
-        <Text className="text-lg">{date.toDateString()}</Text>
-      </TouchableOpacity>
+      <Text className="text-4xl color-gray-400">New Salary</Text>
+      <View>
+        <Text className=" color-white">Month</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowDate(true);
+          }}
+        >
+          <Text className="text-lg color-white">{date.toDateString()}</Text>
+        </TouchableOpacity>
+      </View>
 
       {showDate && (
         <DateTimePicker
@@ -45,17 +48,20 @@ const addSalary = () => {
           onChange={ChangeDate}
         />
       )}
-
-      <Text>Amount</Text>
-      <TextInput
-        placeholder="0.00"
-        keyboardType="number-pad"
-        onChangeText={(value) => setAmount(value)}
-        value={amount}
-      />
+      <View>
+        <Text className="text-white">Amount</Text>
+        <TextInput
+          className="color-white"
+          placeholder="0.00"
+          placeholderTextColor="white"
+          keyboardType="number-pad"
+          onChangeText={(value) => setAmount(value)}
+          value={amount}
+        />
+      </View>
 
       <TouchableOpacity onPress={handleSubmit}>
-        <Text className="w-48 border rounded-full flex items-center text-center justify-center p-2">
+        <Text className="w-full border rounded-full flex items-center text-center justify-center p-2 color-white border-white">
           Add Salary
         </Text>
       </TouchableOpacity>
