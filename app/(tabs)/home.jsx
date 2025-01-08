@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "../../components/Card";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { initializeDbConnection } from "../../db/db";
 import { initializeDatabase } from "../../db/schema";
 import { getSalaries } from "../../db/transactions";
@@ -10,67 +10,89 @@ import { getSalaries } from "../../db/transactions";
 const Home = () => {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const initDB = async () => {
-      try {
-        await initializeDbConnection();
-        await initializeDatabase();
-        const res = await getSalaries();
-        setData(res);
-        console.log(res);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    initDB();
-  }, []);
+  // useEffect(() => {
+  //   const initDB = async () => {
+  //     try {
+  //       await initializeDbConnection();
+  //       await initializeDatabase();
+  //       const res = await getSalaries();
+  //       setData(res);
+  //       console.log(res);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   initDB();
+  // }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const initDB = async () => {
+        try {
+          await initializeDbConnection();
+          await initializeDatabase();
+          const res = await getSalaries();
+          setData(res);
+          console.log(res);
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      initDB();
+    }, [])
+  );
 
-  const handleRefresh = async () => {
-    const res = await getSalaries();
-    setData(res);
-  };
+  // const handleRefresh = async () => {
+  //   const res = await getSalaries();
+  //   setData(res);
+  // };
 
   return (
     <SafeAreaView>
-      <ScrollView>
-        <View className="p-4 gap-3">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-4xl">Home</Text>
-            <TouchableOpacity onPress={handleRefresh}>
+      <View className="p-4 gap-3 h-full">
+        <View className="flex-row items-center justify-between">
+          <Text className="text-4xl">Home</Text>
+          {/* <TouchableOpacity onPress={handleRefresh}>
               <Text>Refresh</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+        </View>
+        <View className="flex-row justify-between">
+          <View className="border border-gray-400 rounded-lg p-3">
+            <Text>Total Income:</Text>
+            <Text>{data.length > 0 && data[0].sum_salaries}</Text>
           </View>
-          <View className="flex-row justify-between">
-            <View className="border border-gray-400 rounded-lg p-3">
-              <Text>Total Income:</Text>
-              <Text>1500</Text>
-            </View>
-            <View className="border border-gray-400 rounded-lg p-3">
-              <Text>Total Expenses:</Text>
-              <Text>1500</Text>
-            </View>
-            <View className="border border-gray-400 rounded-lg p-3">
-              <Text>Total Remaining:</Text>
-              <Text>1500</Text>
-            </View>
+          <View className="border border-gray-400 rounded-lg p-3">
+            <Text>Total Expenses:</Text>
+            <Text>{data.length > 0 && data[0].sum_total_spendings}</Text>
           </View>
-
+          <View className="border border-gray-400 rounded-lg p-3">
+            <Text>Total Remaining:</Text>
+            <Text>
+              {data.length > 0 &&
+                data[0].sum_salaries - data[0].sum_total_spendings}
+            </Text>
+          </View>
+        </View>
+        <ScrollView
+          contentContainerStyle={{ gap: 10, flexDirection: "column-reverse" }}
+        >
           {data.map((itm) => (
             <TouchableOpacity
               key={itm.id}
               onPress={() => {
-                router.push(`/SingleCard/${itm.id}`);
+                router.push(
+                  `/SingleCard/${itm.id}?amount=${itm.income}&expense=${itm.total_spending}&date=${itm.month}`
+                );
               }}
             >
               <Card
                 date={itm.month}
                 amount={itm.income}
-                total_spending={itm.total_spending}
+                total_spending={itm.sum_spendings}
               />
             </TouchableOpacity>
           ))}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

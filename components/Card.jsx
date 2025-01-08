@@ -18,7 +18,7 @@ const Card = ({ date, amount, total_spending }) => {
       </View>
       <View className="flex-row justify-between">
         <Text className="text-lg">Remaining:</Text>
-        <Text className="text-lg text-gray-500">140</Text>
+        <Text className="text-lg text-gray-500">{amount - total_spending}</Text>
       </View>
     </View>
   );

@@ -6,6 +6,7 @@ import {
   ScrollView,
   Keyboard,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
@@ -13,7 +14,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // import DatePicker from "react-native-date-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
-import { getCategories, addRecord as AddRecord } from "../../db/transactions";
+import {
+  getCategories,
+  addRecord as AddRecord,
+  deleteRecord,
+  updateRecord,
+} from "../../db/transactions";
 
 const addRecord = () => {
   // console.log(param);
@@ -21,9 +27,19 @@ const addRecord = () => {
   // actual useful
   const param = useLocalSearchParams();
   console.log("Param2: ", param); //{"id": "14"} || {"add":"false", "id":"14"}
-  const [testtt, setTesttt] = useState(param.edit || "no edit");
-  console.log(testtt);
-  param.edit && console.log("EDITTTT");
+
+  if (param.date) {
+    let [year, month, day] = param.date.split("-");
+    let [hour, minute, seconds] = param.time.split(" ")[0].split(":");
+    // let dd = parseInt(day);
+    // let dy = parseInt(year);
+    // let dm = parseInt(month);
+    // let dh = parseInt(hour);
+    // let dmi = parseInt(minute);
+    // let ds = parseInt(seconds);
+    var d = new Date(year, month - 1, day, hour, minute, seconds);
+    console.log(d);
+  }
 
   // just a bunch of functions/hooks
   // const param3 = useRouter();
@@ -33,28 +49,34 @@ const addRecord = () => {
   // const { query } = useRouter();
   // console.log(query);
 
-  const [recordType, setRecordType] = useState();
-  const [amount, setAmount] = useState();
+  const [recordType, setRecordType] = useState(param.type || "");
+  const [amount, setAmount] = useState(param.amount || 0);
 
   const [showDate, setShowDate] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(
+    (param.date && new Date(param.date)) || new Date()
+  );
 
   const [showTime, setShowTime] = useState(false);
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState((param.time && new Date(d)) || new Date());
 
-  const [category, setCategory] = useState();
+  const [category, setCategory] = useState(param.category || "");
   // const [subCategory, setSubCategory] = useState();
   const [rtvCat, setRtvCat] = useState();
 
-  const [payment, setPayment] = useState();
+  const [paymentMethod, setPaymentMethod] = useState(
+    param.payment_method || ""
+  );
 
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(param.note || "");
 
   const ChangeDate = (e, selectedValue) => {
+    console.log("DATE SELECTED VALUE", selectedValue);
     setShowDate(false);
     setDate(selectedValue);
   };
   const ChangeTime = (e, selectedValue) => {
+    console.log("TIME SELECTED VALUE", selectedValue);
     setShowTime(false);
     setTime(selectedValue);
   };
@@ -102,7 +124,7 @@ const addRecord = () => {
   }, []);
 
   const handleSubmit = async () => {
-    if (recordType && amount && date && time && category && payment) {
+    if (recordType && amount && date && time && category && paymentMethod) {
       console.log(
         param.id,
         recordType,
@@ -110,18 +132,18 @@ const addRecord = () => {
         date.toDateString(),
         time.toTimeString(),
         category,
-        payment,
+        paymentMethod,
         note
       );
       try {
         const res = await AddRecord(
           param.id,
           recordType,
-          date.toDateString(),
+          date.toISOString().split("T")[0],
           time.toTimeString(),
           amount,
           category,
-          payment,
+          paymentMethod,
           note
         );
         console.log(res);
@@ -132,6 +154,50 @@ const addRecord = () => {
     } else {
       return;
     }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const res = await updateRecord(
+        param.edit,
+        recordType,
+        date.toISOString().split("T")[0],
+        time.toTimeString(),
+        amount,
+        category,
+        paymentMethod,
+        note
+      );
+      console.log(res);
+      router.back();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirm Deletion..",
+      "Are you sure you want to delete this Record?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => {
+            console.log("CANCELED");
+          },
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            console.log("DELETED");
+            const res = await deleteRecord(param.edit);
+            router.back();
+          },
+        },
+      ]
+      // { cancelable: true }
+    );
   };
 
   return (
@@ -236,11 +302,11 @@ const addRecord = () => {
           <Picker.Item />
         </Picker> */}
 
-        <Text className="color-gray-400">Payment Type</Text>
+        <Text className="color-gray-400">Payment Method</Text>
         <Picker
           mode="dropdown"
-          selectedValue={payment}
-          onValueChange={(itemValue, itemIndex) => setPayment(itemValue)}
+          selectedValue={paymentMethod}
+          onValueChange={(itemValue, itemIndex) => setPaymentMethod(itemValue)}
         >
           <Picker.Item label="Pick.." color="#808080" enabled={false} />
 
@@ -257,12 +323,26 @@ const addRecord = () => {
           value={note}
           className="text-lg"
         />
-
-        <TouchableOpacity onPress={handleSubmit}>
-          <Text className="p-2 border w-32 rounded-xl text-center">
-            Add Record
-          </Text>
-        </TouchableOpacity>
+        {param.edit ? (
+          <View className="gap-2">
+            <TouchableOpacity onPress={handleUpdate}>
+              <Text className="w-full p-2 border bg-green-400 text-center">
+                Edit
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete}>
+              <Text className="w-full p-2 border bg-red-400 text-center">
+                Delete
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleSubmit}>
+            <Text className="p-2 border w-32 rounded-xl text-center">
+              Add Record
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

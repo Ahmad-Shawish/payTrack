@@ -1,9 +1,16 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Dimensions,
+} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Record from "../../components/Record";
-import { router, useLocalSearchParams } from "expo-router";
-import { getSalaryRecords } from "../../db/transactions";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { deleteSalary, getSalaryRecords } from "../../db/transactions";
 
 const SingleCard = () => {
   const param = useLocalSearchParams();
@@ -11,50 +18,98 @@ const SingleCard = () => {
 
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    const init = async () => {
-      const res = await getSalaryRecords(param.id);
-      setData(res);
-      console.log(res);
-    };
-    init();
-  }, []);
+  // useEffect(() => {
+  //   const init = async () => {
+  //     const res = await getSalaryRecords(param.id);
+  //     setData(res);
+  //     console.log(res);
+  //   };
+  //   init();
+  // }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const init = async () => {
+        const res = await getSalaryRecords(param.id);
+        setData(res);
+        console.log(res);
+      };
+      init();
+    }, [])
+  );
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirm Deletion..",
+      "Are you sure you want to delete this Salary and all records in it?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => {
+            console.log("CANCELED");
+          },
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            console.log("DELETED");
+            const res = await deleteSalary(param.id);
+            router.back();
+          },
+        },
+      ]
+      // { cancelable: true }
+    );
+  };
 
   return (
     <SafeAreaView>
-      <View className="p-4 gap-2">
+      <View className="p-4 gap-2 h-full">
         <View className="flex-row justify-between">
-          <Text>8/2024</Text>
-          <TouchableOpacity
-            className="rounded-full bg-blue-400 w-10 h-10 items-center justify-center"
-            // onPress={() => router.push("/addRecord/14?add=false")}
-            onPress={() => router.push(`/addRecord/${param.id}`)}
-          >
-            <Text className="text-2xl color-white">+</Text>
-          </TouchableOpacity>
+          <Text className="text-2xl">{param.date}</Text>
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              className="rounded-full bg-red-400 p-3"
+              onPress={handleDelete}
+            >
+              <Text>Delete</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="rounded-full bg-blue-400 w-10 h-10 items-center justify-center"
+              // onPress={() => router.push("/addRecord/14?add=false")}
+              onPress={() => router.push(`/addRecord/${param.id}`)}
+            >
+              <Text className="text-2xl color-white">+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View className="flex-row justify-between">
-          <View className="border border-gray-400 rounded-lg p-3 items-center">
+          <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
             <Text>Income:</Text>
-            <Text>1500</Text>
+            <Text>{param.amount}</Text>
           </View>
-          <View className="border border-gray-400 rounded-lg p-3 items-center">
+          <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
             <Text>Expenses:</Text>
-            <Text>1500</Text>
+            <Text>{data.length > 0 && data[0].sum_expenses}</Text>
           </View>
-          <View className="border border-gray-400 rounded-lg p-3 items-center">
+          <View className="border w-1/3 border-gray-400 rounded-lg p-3 items-center">
             <Text>Remaining:</Text>
-            <Text>1500</Text>
+            <Text>
+              {data.length > 0 && param.amount - data[0].sum_expenses}
+            </Text>
           </View>
         </View>
-        <ScrollView contentContainerStyle={{ gap: 10 }}>
+        <ScrollView
+          contentContainerStyle={{ gap: 10, flexDirection: "column-reverse" }}
+        >
           {data &&
             data.map((itm) => (
               <TouchableOpacity
                 key={itm.id}
                 onPress={() =>
                   router.push(
-                    `/addRecord/${param.id}?edit=${itm.id}&type=${itm.type}&amount=${itm.amount}&date=${itm.date}&time=${itm.time}&catagory=${itm.category_id}&payment_type=${itm.method}&note=${itm.note}`
+                    `/addRecord/${param.id}?edit=${itm.id}&type=${itm.type}&amount=${itm.amount}&date=${itm.date}&time=${itm.time}&category=${itm.category_id}&payment_method=${itm.method}&note=${itm.note}`
                   )
                 }
               >
